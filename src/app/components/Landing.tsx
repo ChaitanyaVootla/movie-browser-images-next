@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import ConversionStats from "./ConversionStats";
 import { DEFAULTS_DIMENSIONS } from "@/constants/image";
+import { CDN_BASE_URL } from "@/constants/settings";
 
 export default function Landing() {
     const sampleItems = [
@@ -71,7 +72,7 @@ export default function Landing() {
         },
     ]
     const [currentItem, setCurrentItem] = useState(sampleItems[0]);
-    const [currentItemStats, setCurrentItemStats] = useState({totalSize: 0, totalOriginalSize: 0});
+    const [currentItemStats, setCurrentItemStats] = useState({totalSize: 0, totalOriginalSize: 0, totalAvifSize: 0});
 
     useEffect(() => {
         const handleItemUpdate = async () => {
@@ -84,11 +85,11 @@ export default function Landing() {
 
     return (
         <>
-        <div className="w-full h-full flex justify-between max-md:flex-wrap gap-10 mt-10">
-            <div className="h-full flex flex-col pb-20 w-[50vw]">
+        <div className="w-full min-h-[calc(100vh-180px)] flex justify-between max-md:flex-wrap gap-10 mt-10">
+            <div className="h-full flex flex-col md:w-[50vw] justify-between">
                 <div className="pb-[20%]">
                     <h2 className="text-3xl max-w-[80%]">
-                        Modern Image Formats for all Movies and Series from TMDB Served Through a super fast CDN.
+                    Optimized TMDB Images Delivered via a Lightning-Fast CDN
                     </h2>
                     <a href="https://themoviebrowser.com" target="_blank"
                         className="text-neutral-200 flex just items-center mt-2 text-xs w-fit">
@@ -100,12 +101,11 @@ export default function Landing() {
                     </a>
 
                     <p className="mt-20 text-sm text-neutral-200">
-                        Access any image through a simple developer friendly URL,
-                        no API calls required !
+                        Access TMDB images instantly with simple URLs, no API calls needed!
                     </p>
-                    <pre className="mt-2 bg-neutral-900 text-white rounded-md w-fit px-6 py-3 text-sm border-[1px]
+                    <pre className="mt-2 bg-neutral-900 text-white rounded-md w-fit px-3 py-2 text-sm border-[1px]
                         border-neutral-800 text-wrap">
-                        https://d2qifmj8erqnak.cloudfront.net/
+                        {CDN_BASE_URL}/
                         <span className="text-purple-500"> (movie | series) </span>/
                         <span className="text-blue-500"> (TMDB id) </span>/
                         <span className="text-yellow-400"> (poster | backdrop | widePoster | logo) </span>
@@ -115,7 +115,7 @@ export default function Landing() {
                     <div className="mt-10 flex gap-6 items-center">
                         <a href="https://github.com/chaitanyavootla/movie-browser-images" target="_blank">
                             <button className="bg-neutral-200 px-4 py-2 rounded-lg flex items-center gap-2 text-black
-                                text-xl border-[1px] border-neutral-700">
+                                text-xl border-[1px] border-neutral-700 hover:-mt-2 hover:shadow-lg hover:scale-105 shadow-neutral-200 duration-200">
                                 <Image src="/github.svg" alt="github icon" width={25} height={25}></Image>
                                     GitHub
                                 <Image src="/link_arrow.svg" alt="external github link" width={25} height={25}></Image>
@@ -177,7 +177,7 @@ export default function Landing() {
                 </div>
             </div>
 
-            <div className="flex flex-col gap-10 w-[35vw] h-full justify-center">
+            <div className="flex flex-col gap-10 md:w-[35vw] h-full justify-center">
                 <div className="flex gap-10 justify-start w-full">
                     <div className="flex flex-col gap-1 w-[100%]">
                         <div className="uppercase text-xs text-neutral-400">Logo</div>
@@ -255,27 +255,6 @@ export default function Landing() {
                     {/* <pre className="mt-4 bg-neutral-900 text-white rounded-md w-fit px-3 py-2 border-[1px] border-neutral-800">
                         {currentImageUrl}
                     </pre> */}
-                </div>
-            </div>
-        </div>
-                    
-        <div className="w-full flex justify-center items-center">
-            <div className="flex gap-2 justify-center items-center py-2 px-20 w-fit border-y-[1px]
-                border-neutral-700 text-sm bg-gradient-to-r from-transparent via-neutral-800 to-transparent">
-                <div>
-                    This is a Open-Source project powering the images in
-                    <a href="https://TheMovieBrowser.com" target="_blank"
-                        className="ml-1 underline underline-offset-2">
-                        TheMovieBrowser.com
-                    </a>
-                </div>
-                <div>
-                    If you would like to use this and need more image formats or sizes, please
-                    open an issue on the GitHub repository
-                    <a href="https://github.com/chaitanyavootla/movie-browser-images" target="_blank"
-                        className="ml-1 underline underline-offset-2">
-                        movie-browser-images
-                    </a>
                 </div>
             </div>
         </div>
