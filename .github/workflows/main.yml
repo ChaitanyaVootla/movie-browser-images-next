@@ -1,0 +1,77 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set Node.js 20
+      uses: actions/setup-node@v2
+      with:
+        node-version: '20'
+
+    - name: Install Dependencies
+      run: npm install
+
+    - name: Build Next.js App
+      run: |
+        npm run build
+        mkdir -p deploy
+        cp -r .next package.json package-lock.json public deploy/
+        cd deploy && zip -r dist.zip ./
+
+    - name: Release
+      uses: ncipollo/release-action@v1
+      with:
+        name: "release"
+        allowUpdates: true
+        artifacts: "deploy/dist.zip"
+        token: ${{ secrets.GITHUB_TOKEN }}
+        tag: "latest"
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Deploy to Server
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.DROPLET_IP }}
+        username: root
+        password: ${{ secrets.DIGITAL_OCEAN_PASS }}
+        script: |
+          mkdir -p /tmb-images-next
+          cd /tmb-images-next
+          rm -f dist.zip
+          rm -rf .next public package.json package-lock.json
+          
+          echo "==============================================================="
+          echo "====================== Downloading dist ======================"
+          echo "==============================================================="
+          
+          wget https://github.com/ChaitanyaVootla/movie-browser-images-next/releases/download/latest/dist.zip
+          apt-get install -y unzip || true
+          unzip -o dist.zip
+          
+          echo "==============================================================="
+          echo "====================== Installing Dependencies ======================"
+          echo "==============================================================="
+          
+          npm install --omit=dev
+          
+          echo "==============================================================="
+          echo "====================== Restarting Next.js App ======================"
+          echo "==============================================================="
+          
+          npm install -g pm2
+          pm2 delete imagesNext || true
+          pm2 start "npm run start" --name imagesNext
+          pm2 save
+          pm2 startup
